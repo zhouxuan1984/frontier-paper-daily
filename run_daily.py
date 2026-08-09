@@ -40,6 +40,12 @@ def main():
 
     papers = fetch_papers(date_from.isoformat(), report_date.isoformat())
 
+    openalex_n = sum(1 for p in papers if p.get("source") == "OpenAlex")
+    if openalex_n == 0:
+        print("[ABORT] OpenAlex 数据源未取得任何文献（可能被限流），"
+              "本次不生成报告，避免提交残缺数据")
+        sys.exit(2)
+
     md = build_markdown(papers, report_date.isoformat(), date_from.isoformat())
     html = build_html(papers, report_date.isoformat(), date_from.isoformat())
 

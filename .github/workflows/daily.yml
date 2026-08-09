@@ -2,8 +2,8 @@ name: Frontier Paper Daily
 
 on:
   schedule:
-    # 北京时间每天 10:00（UTC 02:00）
-    - cron: "0 2 * * *"
+    # 北京时间每天 08:00（UTC 00:00）
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:

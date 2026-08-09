@@ -39,7 +39,7 @@ python3 run_daily.py                                # 生成 reports/ 下 .md + 
 
 ## GitHub 自主运行
 
-1. 推送到 GitHub 后，Actions 每天 **北京时间 10:00** 自动生成报告，并自动把
+1. 推送到 GitHub 后，Actions 每天 **北京时间 08:00** 自动生成报告，并自动把
    `reports/前沿文献日报_YYYY-MM-DD.md/html` 提交回仓库。
 2. 可选邮件推送：在仓库 Settings → Secrets and variables → Actions 添加：
 

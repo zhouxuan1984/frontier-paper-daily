@@ -26,8 +26,8 @@ def send_email(html_path, subject):
     msg["To"] = ", ".join(recipients)
     msg.attach(MIMEText(html, "html", "utf-8"))
 
-    host = os.environ.get("SMTP_HOST", "smtp.qq.com")
-    port = int(os.environ.get("SMTP_PORT", "465"))
+    host = os.environ.get("SMTP_HOST") or "smtp.qq.com"
+    port = int(os.environ.get("SMTP_PORT") or "465")
     server = smtplib.SMTP_SSL(host, port, timeout=30)
     server.login(addr, auth)
     server.send_message(msg)

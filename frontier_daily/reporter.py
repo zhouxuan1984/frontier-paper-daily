@@ -3,6 +3,7 @@
 """
 
 from datetime import date, timedelta
+import re
 
 from .config import REPORT_TITLE, SCOPE, SOURCES_NOTE
 
@@ -34,6 +35,10 @@ def _if_str(p):
 
 def _san(t):
     return (t or "").replace("_", r"\_").replace("|", r"\|")
+
+
+def _abstract_str(p):
+    return re.sub(r"\s+", " ", p.get("abstract") or "").strip()
 
 
 def _markdown_links(p):
@@ -131,6 +136,9 @@ def build_markdown(papers, date_to, date_from):
                      f"发表 {_publish_day(p) or '—'}｜来源 {p.get('source') or '—'}")
             L.append(f"   - 被引量 {_cited_str(p)}　被引百分位 {_pct_str(p)}")
             L.append(f"   - 入口 {_markdown_links(p)}")
+            ab = _abstract_str(p)
+            if ab:
+                L.append(f"   - 📄 摘要：{ab}")
             L.append("")
 
         L.append("### 🔥 近7天高被引｜按被引百分位排序")
@@ -144,6 +152,9 @@ def build_markdown(papers, date_to, date_from):
                      f"期刊 {p.get('journal') or '—'}（IF {_if_str(p)}）")
             L.append(f"   - 发表 {_publish_day(p)} ｜ 来源 {p.get('source') or '—'}")
             L.append(f"   - 入口：{_markdown_links(p)}")
+            ab = _abstract_str(p)
+            if ab:
+                L.append(f"   - 📄 摘要：{ab}")
             L.append("")
 
     L.append("---")
@@ -198,11 +209,14 @@ def build_html(papers, date_to, date_from):
         sec.append("<tr><th>#</th><th>标题 / 期刊 / 摘要</th><th>被引</th>"
                    "<th>百分位</th><th>入口</th></tr>")
         for i, p in enumerate(b["fresh"], 1):
+            ab = _esc(_abstract_str(p))
             sec.append(
                 f'<tr><td>{i}</td>'
                 f'<td><b>{_esc(p.get("title",""))}</b>'
                 f'<div class="no">{_esc(p.get("journal") or "—")} · IF {_if_str(p)}'
-                f' · {_esc(_publish_day(p))} · {_esc(p.get("source") or "")}</div></td>'
+                f' · {_esc(_publish_day(p))} · {_esc(p.get("source") or "")}</div>'
+                + (f'<div class="ab">📄 {ab}</div>' if ab else '')
+                + '</td>'
                 f'<td class="c">{_cited_str(p)}</td>'
                 f'<td class="c">{_pct_str(p)}</td>'
                 f'<td class="c">{_html_links(p)}</td></tr>')
@@ -215,11 +229,14 @@ def build_html(papers, date_to, date_from):
         sec.append('<tr><th>#</th><th>标题 / 期刊</th><th>被引</th><th>百分位</th>'
                    "<th>入口</th></tr>")
         for i, p in enumerate(b["hot"], 1):
+            ab = _esc(_abstract_str(p))
             sec.append(
                 f'<tr><td>{i}</td>'
                 f'<td><b>{_esc(p.get("title",""))}</b>'
                 f'<div class="no">{_esc(p.get("journal") or "—")} · IF {_if_str(p)}'
-                f' · {_esc(_publish_day(p))}</div></td>'
+                f' · {_esc(_publish_day(p))}</div>'
+                + (f'<div class="ab">📄 {ab}</div>' if ab else '')
+                + '</td>'
                 f'<td class="r">{_cited_str(p)}</td>'
                 f'<td class="r"><b>{_pct_str(p)}</b></td>'
                 f'<td class="c">{_html_links(p)}</td></tr>')
@@ -260,7 +277,8 @@ def build_html(papers, date_to, date_from):
       .tbl td.r{text-align:right;white-space:nowrap;}
       .tbl td.c{white-space:nowrap;max-width:210px;}
       .no{color:#64748b;font-size:12px;margin-top:1px;}
-      .ab{color:#94a3b8;font-size:12px;margin-top:2px;}
+      .ab{color:#475569;font-size:12px;line-height:1.55;margin-top:4px;padding:6px 8px;
+        background:#f8fafc;border-left:2px solid #cbd5e1;border-radius:3px;}
       .lnk{display:inline-block;margin:2px 3px 2px 0;padding:2px 8px;border:1px solid #cbd5e1;
         border-radius:999px;color:#2563eb;text-decoration:none;font-size:12px;background:#eff6ff;}
       .lnk-manual{color:#64748b;background:#f1f5f9;border-color:#e2e8f0;}

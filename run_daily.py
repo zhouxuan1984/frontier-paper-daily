@@ -68,8 +68,8 @@ def main():
     print(f"[SAVED] {html_path}")
 
     if not args.no_email:
-        sent = send_email(html_path, f"前沿文献日报 {report_date.isoformat()}")
-        print(f"[EMAIL] {'已发送' if sent else '未发送（未配置邮件变量，跳过）'}")
+        sent, info = send_email(html_path, f"前沿文献日报 {report_date.isoformat()}")
+        print(f"[EMAIL] {info}")
 
 
 if __name__ == "__main__":
